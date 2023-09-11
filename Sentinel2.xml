@@ -1,0 +1,116 @@
+<Options>
+<Mask></Mask>
+<Biophysical-indices>
+<Vegetation>
+	<NDVI id="V1"></NDVI>
+	<GNDVI id="V2"></GNDVI>
+	<EVI id="V3"></EVI>
+	<GEMI id="V4"></GEMI>
+	<DVI id="V5"></DVI>
+	<GARI id="V6"></GARI>
+	<GDVI id="V7"></GDVI>
+	<NDRE id="V8"></NDRE>
+	<TVI-Transformed id="V9"></TVI-Transformed>
+	<IPVI id="V10"></IPVI>
+	<RDVI id="V11"></RDVI>
+	<WDVI id="V12"></WDVI>
+	<VARI id="V13"></VARI>
+	<ARVI id="V14"></ARVI>
+	<NLI id="V15"></NLI>
+	<MNLI id="V16"></MNLI>
+	<NDGI id="V17"></NDGI>
+	<TDVI id="V18"></TDVI>
+	<WDRVI id="V19"></WDRVI>
+	<ENDVI id="V20"></ENDVI>
+	<GRVI id="V21"></GRVI>
+	<PSRI id="V22"></PSRI>
+	<SR id="V23"></SR>
+	<MSR id="V24"></MSR>
+	<EVI2 id="V25"></EVI2>
+	<AFRI1.6 id="V26"></AFRI1.6>
+	<AFRI2.1 id="V27"></AFRI2.1>
+	<ARI id="V28"></ARI>
+	<TVI-Triangular id="V29"></TVI-Triangular>
+	<MTVI1 id="V30"></MTVI1>
+	<MTVI2 id="V31"></MTVI2>
+	<CMRI id="V32"></CMRI>
+	<NNIR id="V33"></NNIR>
+	<GR id="V34"></GR>
+	<VIRE id="V35"></VIRE>
+	<VIRRE id="V36"></VIRRE>
+	<SVI id="V37"></SVI>
+	<DNVI id="V38"></DNVI>
+	<RGR id="V39"></RGR>
+	<RENDVI id="V40"></RENDVI>
+	<CTVI id="V41"></CTVI>
+	<TTVI id="V42"></TTVI>
+	<Datt1 id="V43"></Datt1>
+	<Datt4 id="V44"></Datt4>
+	<Datt6 id="V45"></Datt6>
+	<CVI id="V46"></CVI>
+	<GCI id="V47"></GCI>
+	<LAI id="V48"></LAI>
+	<MCARI id="V49"></MCARI>
+	<CCCI id="V50"></CCCI>
+	<GLI id="V51"></GLI>
+	<SIPI id="V52"></SIPI>
+	<SLAVI id="V53"></SLAVI>
+	<NPCI id="V54"></NPCI>
+	<CI-RE id="V55"></CI-RE>
+	<CI-G id="V56"></CI-G>
+	<SAVI id="V57"></SAVI>
+	<MSAVI id="V58"></MSAVI>
+	<OSAVI id="V59"></OSAVI>
+	<GOSAVI id="V60"></GOSAVI>
+	<GSAVI id="V61"></GSAVI>
+	<SARVI id="V62"></SARVI>
+	<TSAVI id="V63"></TSAVI>
+	<REDVI id="V64"></REDVI>
+	<RERVI id="V65"></RERVI>
+	</Vegetation>
+<Soil>
+	<NDSI-Snow id="S1"></NDSI-Snow>
+	<CMR id="S2"></CMR>
+	<FMR id="S3"></FMR>
+	<IOR id="S4"></IOR>
+	<NDSI-Salinity id="S5"></NDSI-Salinity>
+	<DBSI id="S6"></DBSI>
+	<SI id="S7"></SI>
+	<CRSI id="S8"></CRSI>
+	<TBI id="S9"></TBI>
+	</Soil>
+<Water>
+	<MSI id="W1"></MSI>
+	<NDMI id="W2"></NDMI>
+	<NDWI id="W3"></NDWI>
+	<GVMI id="W4"></GVMI>
+	<NHI id="W5"></NHI>
+	<MNDWI id="W6"></MNDWI>
+	<DSWI id="W7"></DSWI>
+	<AWEInsh id="W8"></AWEInsh>
+	</Water>
+<Burn>
+	<NBR id="B1"></NBR>
+	<BAI id="B2"></BAI>
+	<NBR2 id="B3"></NBR2>
+	<CSI id="B4"></CSI>
+	</Burn>
+<Building>
+	<NDBI id="BL1"></NDBI>
+	<BU id="BL2"></BU>
+	<UI id="BL3"></UI>
+	<IBI2 id="BL4"></IBI2>
+	</Building>
+
+<Others>
+	<CLSI id="O1"></CLSI>
+	<BLB1 id="O2"></BLB1>
+	<BLB2 id="O3"></BLB2>
+	<NDI id="O4"></NDI>
+	</Others>
+</Biophysical-indices>
+</Options>
+	
+
+	
+	

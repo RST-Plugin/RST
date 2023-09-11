@@ -1,0 +1,98 @@
+<Options>
+<Mask></Mask>
+<Biophysical-indices>
+<Vegetation>
+	<NDVI id="V1"></NDVI>
+	<GNDVI id="V2"></GNDVI>
+	<EVI id="V3"></EVI>
+	<GEMI id="V4"></GEMI>
+	<DVI id="V5"></DVI>
+	<GARI id="V6"></GARI>
+	<GDVI id="V7"></GDVI>
+	<TVI-Transformed id="V8"></TVI-Transformed>
+	<IPVI id="V9"></IPVI>
+	<RDVI id="V10"></RDVI>
+	<WDVI id="V11"></WDVI>
+	<VARI id="V12"></VARI>
+	<ARVI id="V13"></ARVI>
+	<NLI id="V14"></NLI>
+	<MNLI id="V15"></MNLI>
+	<NDGI id="V16"></NDGI>
+	<RI id="V17"></RI>
+	<TDVI id="V18"></TDVI>
+	<WDRVI id="V19"></WDRVI>
+	<GRVI id="V20"></GRVI>
+	<PSRI id="V21"></PSRI>
+	<SR id="V22"></SR>
+	<MSR id="V23"></MSR>
+	<EVI2 id="V24"></EVI2>
+	<AFRI1.6 id="V25"></AFRI1.6>
+	<AFRI2.1 id="V26"></AFRI2.1>
+	<TVI-Triangular id="V27"></TVI-Triangular>
+	<CMRI id="V28"></CMRI>
+	<NNIR id="V29"></NNIR>
+	<DNVI id="V30"></DNVI>
+	<RGR id="V31"></RGR>
+	<CTVI id="V32"></CTVI>
+	<TTVI id="V33"></TTVI>
+	<CVI id="V34"></CVI>
+	<GCI id="V35"></GCI>
+	<LAI id="V36"></LAI>
+	<GLI id="V37"></GLI>
+	<SIPI id="V38"></SIPI>
+	<SLAVI id="V39"></SLAVI>
+	<NPCI id="V40"></NPCI>
+	<SAVI id="V41"></SAVI>
+	<MSAVI id="V42"></MSAVI>
+	<OSAVI id="V43"></OSAVI>
+	<GOSAVI id="V44"></GOSAVI>
+	<GSAVI id="V45"></GSAVI>
+	<SARVI id="V46"></SARVI>
+	<TSAVI id="V47"></TSAVI>
+	</Vegetation>
+<Soil>
+	<DBSI id="S1"></DBSI>
+	<SBI id="S2"></SBI>
+	<NDSI-Snow id="S3"></NDSI-Snow>
+	<CMR id="S4"></CMR>
+	<FMR id="S5"></FMR>
+	<IOR id="S6"></IOR>
+	<NDSI-Salinity id="S7"></NDSI-Salinity>
+	<SI id="S8"></SI>
+	<BDI id="S9"></BDI>
+	</Soil>
+<Water>
+	<MSI id="W1"></MSI>
+	<NDMI id="W2"></NDMI>
+	<NDWI id="W3"></NDWI>
+	<GVMI id="W4"></GVMI>
+	<NHI id="W5"></NHI>
+	<MNDWI id="W6"></MNDWI>
+	<DSWI id="W7"></DSWI>
+	<AWEInsh id="W8"></AWEInsh>
+	</Water>
+<Burn>
+	<NBR id="B1"></NBR>
+	<BAI id="B2"></BAI>
+	<NBR2 id="B3"></NBR2>
+	<CSI id="B4"></CSI>
+	</Burn>
+<Building>
+	<DBI id="BL1"></DBI>
+	<NDBI id="BL2"></NDBI>
+	<BU id="BL3"></BU>
+	<EBBI id="BL4"></EBBI>
+	<UI id="BL5"></UI>
+	<VrNIR-BI id="BL6"></VrNIR-BI>
+	<VgNIR-BI id="BL7"></VgNIR-BI>
+	<IBI2 id="BL8"></IBI2>
+	<NDISI id="BL9"></NDISI>
+	</Building>
+
+<Others>
+	</Others>
+</Biophysical-indices>
+</Options>	
+
+	
+	

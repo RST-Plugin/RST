@@ -1,0 +1,38 @@
+<Options>
+<Mask></Mask>
+<Biophysical-indices>
+<Vegetation>
+	<NDVI id="V1"></NDVI>
+	<GEMI id="V2"></GEMI>
+	<DVI id="V3"></DVI>
+	<TVI-Transformed id="V4"></TVI-Transformed>
+	<RDVI id="V5"></RDVI>
+	<WDVI id="V6"></WDVI>
+	<NLI id="V7"></NLI>
+	<SR id="V8"></SR>
+	<MSR id="V9"></MSR>
+	<EVI2 id="V10"></EVI2>
+	<CTVI id="V11"></CTVI>
+	<TTVI id="V12"></TTVI>
+	<SAVI id="V13"></SAVI>
+	<MSAVI id="V14"></MSAVI>
+	<OSAVI id="V15"></OSAVI>
+	<TSAVI id="V16"></TSAVI>
+	</Vegetation>
+<Water>
+	<MSI id="W1"></MSI>
+	<NDMI id="W2"></NDMI>
+	</Water>
+<Burn>
+	<BAI id="B1"></BAI>
+	</Burn>
+<Building>
+	<NDBI id="BL1"></NDBI>
+	<BU id="BL2"></BU>
+	</Building>
+</Biophysical-indices>
+</Options>
+	
+
+	
+	

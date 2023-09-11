@@ -1,0 +1,69 @@
+<Options>
+<Mask></Mask>
+<Biophysical-indices>
+<Vegetation>
+	<NDVI id="V1"></NDVI>
+	<GNDVI id="V2"></GNDVI>
+	<GEMI id="V3"></GEMI>
+	<DVI id="V4"></DVI>
+	<GDVI id="V5"></GDVI>
+	<TVI-Transformed id="V6"></TVI-Transformed>
+	<IPVI id="V7"></IPVI>
+	<RDVI id="V8"></RDVI>
+	<WDVI id="V9"></WDVI>
+	<NLI id="V10"></NLI>
+	<NDGI id="V11"></NDGI>
+	<RI id="V12"></RI>
+	<GRVI id="V13"></GRVI>
+	<SR id="V14"></SR>
+	<MSR id="V15"></MSR>
+	<EVI2 id="V16"></EVI2>
+	<AFRI1.6 id="V17"></AFRI1.6>
+	<AFRI2.1 id="V18"></AFRI2.1>
+	<TVI-Triangular id="V19"></TVI-Triangular>
+	<MTVI1 id="V20"></MTVI1>
+	<MTVI2 id="V21"></MTVI2>
+	<CMRI id="V22"></CMRI>
+	<NNIR id="V23"></NNIR>
+	<RGR id="V24"></RGR>
+	<CTVI id="V25"></CTVI>
+	<TTVI id="V26"></TTVI>
+	<CVI id="V27"></CVI>
+	<GCI id="V28"></GCI>
+	<SLAVI id="V29"></SLAVI>
+	<SAVI id="V30"></SAVI>
+	<MSAVI id="V31"></MSAVI>
+	<OSAVI id="V32"></OSAVI>
+	<GOSAVI id="V33"></GOSAVI>
+	<GSAVI id="V34"></GSAVI>
+	<TSAVI id="V35"></TSAVI>
+	</Vegetation>
+<Soil>
+	<NDSI-Snow id="S1"></NDSI-Snow>	
+	</Soil>
+<Water>
+	<MSI id="W1"></MSI>
+	<NDMI id="W2"></NDMI>
+	<NDWI id="W3"></NDWI>
+	<GVMI id="W4"></GVMI>
+	<NHI id="W5"></NHI>
+	<MNDWI id="W6"></MNDWI>
+	</Water>
+<Burn>
+	<NBR id="B1"></NBR>
+	<BAI id="B2"></BAI>
+	<CSI id="B3"></CSI>
+	</Burn>
+<Building>
+	<NDBI id="BL1"></NDBI>
+	<BU id="BL2"></BU>
+	<IBI2 id="BL3"></IBI2>
+	</Building>
+
+</Biophysical-indices>
+</Options>
+
+	
+
+	
+	
