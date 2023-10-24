@@ -21,7 +21,17 @@
  *                                                                         *
  ***************************************************************************/
 """
-
+import pip    
+import qgis.utils
+try:
+    import openpyxl
+except:
+    if qgis.utils.iface.actionShowPythonDialog().isChecked():
+        qgis.utils.iface.messageBar().pushMessage("Your message here", level=qgis.core.Qgis.Info, duration=5)
+        pip.main(['install','openpyxl'])
+    else: 
+        qgis.utils.iface.actionShowPythonDialog().trigger()
+        pip.main(['install','openpyxl'])
 
 import os
 import sys
@@ -28335,8 +28345,8 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             iface.messageBar().clearWidgets() 
 
         elif itemVAR_MODIS=='GARI':
-            if self.le_parameter1Landsat.text():
-                GARIparameter1=float(self.le_parameter1Landsat.text())
+            if self.le_parameter1MODIS.text():
+                GARIparameter1=float(self.le_parameter1MODIS.text())
                     #Progress
                 progressMessageBar = iface.messageBar().createMessage("Executing...")
                 progress = QProgressBar()
