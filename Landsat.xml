@@ -52,14 +52,13 @@
 	</Vegetation>
 <Soil>
 	<DBSI id="S1"></DBSI>
-	<SBI id="S2"></SBI>
-	<NDSI-Snow id="S3"></NDSI-Snow>
-	<CMR id="S4"></CMR>
-	<FMR id="S5"></FMR>
-	<IOR id="S6"></IOR>
-	<NDSI-Salinity id="S7"></NDSI-Salinity>
-	<SI id="S8"></SI>
-	<BDI id="S9"></BDI>
+	<NDSI-Snow id="S2"></NDSI-Snow>
+	<CMR id="S3"></CMR>
+	<FMR id="S4"></FMR>
+	<IOR id="S5"></IOR>
+	<NDSI-Salinity id="S6"></NDSI-Salinity>
+	<SI id="S7"></SI>
+	<BDI id="S8"></BDI>
 	</Soil>
 <Water>
 	<MSI id="W1"></MSI>
