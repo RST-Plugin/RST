@@ -1,5 +1,6 @@
 <Options>
 <Mask></Mask>
+<AI-based_outlier_detection></AI-based_outlier_detection>
 <Biophysical-indices>
 <Vegetation>
 	<NDVI id="V1"></NDVI>

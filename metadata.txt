@@ -6,7 +6,7 @@
 name=RST
 qgisMinimumVersion=3.0
 description=This plugin computes biophysical indices
-version=1.1
+version=1.2
 author=Fatima Ezahrae Ezzaher; Nizar Ben Achhab; Hafssa Naciri; Naoufal Raissouni
 email=rst.qgis@gmail.com
 
@@ -20,11 +20,12 @@ repository=https://github.com/RST-Plugin/RST
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=  version 1.1: -Added an automatic installation of Openpyxl 
-			                  -Corrected issues related to some biophysical indices 
+changelog= version 1.1: -Added an automatic installation of Openpyxl 
+			-Corrected issues related to some biophysical indices
+	   version 1.2: -Added the AI-based outliers detection option
 
 # Tags are comma separated with spaces allowed
-tags=python
+tags= Raster, AVHRR, Sentinel, Landsat, ASTER, MODIS, Remote Sensing, Mask, Clip, Statistics, Outliers detection
 
 homepage=https://github.com/RST-Plugin/RST
 category=Plugins
