@@ -14,6 +14,7 @@ Download and install QGIS (Minimum version=3) from the [official QGIS website](h
 
 ### 2. Install the Plugin
 To install RST, one of two options can be used:
+
 **Option A:** From QGIS Plugin Manager 
 - Open QGIS → *Plugins* → *Manage and Install Plugins*
 - Search for **RST**
@@ -23,7 +24,7 @@ To install RST, one of two options can be used:
 - Download the plugin from the [GitHub repository](https://github.com/RST-Plugin/RST)
 - In QGIS: *Plugins* → *Install from ZIP* → Select the downloaded file
 
- ![RST installation](img/installation.png)
+<img src="img/installation.png" alt="RST installation" width="500"/>
  
 ---
 
@@ -31,7 +32,7 @@ To install RST, one of two options can be used:
 
 The RST provides a structured and intuitive workflow for satellite image pre-processing and biophysical index computation. The interface guides the user through a step-by-step process, starting from satellite selection to result generation, supporting both manual and batch processing modes.
  
- ![RST window](img/RST window.png)
+<img src="img/RST_window.png" alt="RST window" width="500"/>
 
 **1. Select a satellite**
 Choose from supported platforms: AVHRR, MODIS, Sentinel-2, Landsat-8, or ASTER
