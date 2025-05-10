@@ -3,33 +3,18 @@
 
 <img src="img/icon.png" alt="RST Interface" width="300"/>
 
-The **Remote Sensing Toolkit (RST)** is an open-source QGIS plugin designed to streamline the computation and analysis of biophysical indices, particularly for time series studies. It features an intuitive interface, support for multiple satellite platforms, and built-in time series analysis tools. RST is ideal for both novice and expert users in remote sensing.
-
-## 🔍 Quick Overview
-- Compute vegetation, water, soil, burn, and other indices from AVHRR, MODIS, Landsat-8, Sentinel-2, and ASTER.
-- Easily apply cloud masking, clip rasters, and export statistical summaries.
-- Perform time series forecasting directly within QGIS.
+The Remote Sensing Toolkit (RST) is an open-source QGIS plugin designed to streamline the pre-processing and analysis of satellite imagery, particularly in time series studies. It provides an intuitive interface, supports multiple satellite platforms (AVHRR, MODIS, Landsat 8/9, Sentinel-2, and ASTER), and includes over 100 biophysical indices across different categories such as vegetation, water, soil, burn, and buildings. RST also offers powerful pre-processing features, including cloud masking, raster clipping by mask layer, band scaling, and an AI-based outlier detector. This makes it suitable for both novice and expert users working with remote sensing data.
 
 ---
 
-## 🚀 Installation
+## ⚙️ Installation
 
 ### 1. Install QGIS
-Download and install QGIS 3.0 from the [official QGIS website](https://qgis.org).
+Download and install QGIS (Minimum version=3) from the [official QGIS website](https://qgis.org).
 
-### 2. Install Required Python Packages
-The plugin depends on `numpy`, `pandas`, and `openpyxl`.  
-Use the provided `requirements.txt` file and install via command line:
-
-```bash
-pip install -r requirements.txt
-```
-
-**Note:** Ensure you use the version of Python that QGIS uses, or the plugin will not function properly.
-
-### 3. Install the Plugin
-
-**Option A:** From QGIS Plugin Manager  
+### 2. Install the Plugin
+To install RST, one of two options can be used:
+**Option A:** From QGIS Plugin Manager 
 - Open QGIS → *Plugins* → *Manage and Install Plugins*
 - Search for **RST**
 - Click **Install**
@@ -38,31 +23,42 @@ pip install -r requirements.txt
 - Download the plugin from the [GitHub repository](https://github.com/RST-Plugin/RST)
 - In QGIS: *Plugins* → *Install from ZIP* → Select the downloaded file
 
+ ![RST installation](img/installation.png)
+ 
 ---
 
-## ⚙️ Features & Workflow
+## 🧰 RST Features & Workflow
 
-RST includes a dock widget and dialog widgets for file/manual input. The plugin interface allows:
+The RST provides a structured and intuitive workflow for satellite image pre-processing and biophysical index computation. The interface guides the user through a step-by-step process, starting from satellite selection to result generation, supporting both manual and batch processing modes.
+ 
+ ![RST window](img/RST window.png)
 
-1. Selecting a satellite and associated index
-2. Automatically displaying the formula for each index
-3. Manually inputting required bands or selecting folders
-4. Applying optional raster clipping (masking)
-5. Setting output folder and computing results
-6. Exporting statistics: mean, min, max, std dev, variance (in `.txt`, `.csv`, and Excel with charts)
+**1. Select a satellite**
+Choose from supported platforms: AVHRR, MODIS, Sentinel-2, Landsat-8, or ASTER
 
-### 🌍 Supported Masking Options
-- **File selection**: Requires a folder with rasters + a vector layer in `.gpkg` format
-- **Manual selection**: Allows a different mask per raster
+**2. Choose a processing option**
+Based on the satellite, the user selects one of the following tools:
+  - Cloud masking using QA bands
+  - Clipping by vector mask layer
+  - Band scaling
+  - AI-based outlier detection (using time series from CSV files)
+  - Biophysical index computation (100+ indices categorized by satellite and application)
 
----
+**3. Input data**
+Depending on the selected option, the user provides required data via:
+  - File Selection (organized file folders)
+  - Manual Selection (file-by-file input)
 
-## 📁 Output
-- Computed index rasters
-- Statistical summaries (if enabled)
-- All saved to your selected output folder
+**4. Define output settings**
+  - Select an output folder
+  - (Optional) Check the Statistics box to generate summaries: Mean, Min, Max, Std. Dev., Variance, Cout, exported as .txt, .csv, and Excel (with charts)
 
----
+**5. Adjust parameters (when needed)**
+Some indices require user-defined parameters or optional min/max thresholds
+
+**6. Run the process**
+Click the Run button to execute the selected workflow and generate outputs
+
 
 ## 🧠 Tips for Best Experience
 
