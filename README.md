@@ -52,7 +52,7 @@ Depending on the selected option, the user provides required data via:
 
 **4. Define output settings**
   - Select an output folder
-  - (Optional) Check the Statistics box to generate summaries: Mean, Min, Max, Std. Dev., Variance, Cout, exported as .txt, .csv, and Excel (with charts)
+  - (Optional) Check the Statistics box to generate summaries: Mean, Min, Max, Std. Dev., Variance, Count, exported as .txt, .csv, and Excel (with charts)
 
 **5. Adjust parameters (when needed)**
 Some indices require user-defined parameters or optional min/max thresholds
@@ -63,10 +63,10 @@ Click the Run button to execute the selected workflow and generate outputs
 
 ## 🧠 Tips for Best Experience
 
-- ✔️ Add RST icon to toolbar (right-click toolbar → enable RST)
-- 🗂️ Organize raster folders carefully to prevent mismatched bands
-- ✂️ Clip rasters before computing indices (especially for high-res data)
-- 📂 Choose an empty folder as output to avoid conflicts or errors
+- Add RST icon to toolbar (right-click toolbar → enable RST)
+- Organize raster folders carefully to prevent mismatched bands
+- Clip rasters before computing indices (especially for high-res data)
+- Choose an empty folder as output to avoid conflicts or errors
 
 ---
 
@@ -74,13 +74,7 @@ Click the Run button to execute the selected workflow and generate outputs
 
 | Issue | Solution |
 |-------|----------|
-| Plugin not detecting installed packages | Make sure they're installed for **QGIS's Python version** |
-| Errors with raster input | Ensure proper file structure and naming for each satellite |
+| Errors with raster input | Ensure proper file structure and naming for each option |
 | Output missing | Double-check the output folder and whether the "Save to Run" button was clicked |
 
 ---
-
-## 📚 More Info
-
-- Full documentation available in the compiled help file included in the plugin ZIP
-- [GitHub Repository](https://github.com/RST-Plugin/RST)
