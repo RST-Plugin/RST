@@ -1,5 +1,7 @@
 <Options>
-<Mask></Mask>
+<Clipping_by_mask></Clipping_by_mask>
+<Cloud_masking></Cloud_masking>
+<Scaling></Scaling>
 <AI-based_outlier_detection></AI-based_outlier_detection>
 <Biophysical-indices>
 <Vegetation>

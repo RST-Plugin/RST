@@ -1,5 +1,7 @@
 <Options>
-<Mask></Mask>
+<Clipping_by_mask></Clipping_by_mask>
+<Cloud_masking></Cloud_masking>
+<Scaling></Scaling>
 <AI-based_outlier_detection></AI-based_outlier_detection>
 <Biophysical-indices>
 <Vegetation>
@@ -11,7 +13,7 @@
 	<TVI-Transformed id="V6"></TVI-Transformed>
 	<IPVI id="V7"></IPVI>
 	<RDVI id="V8"></RDVI>
-	<WDVI id="V9"></WDVI>
+	<WDVI id="V9"></WDVI><Cloud_masking></Cloud_masking>
 	<NLI id="V10"></NLI>
 	<NDGI id="V11"></NDGI>
 	<RI id="V12"></RI>

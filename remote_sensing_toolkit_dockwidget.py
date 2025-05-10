@@ -38,10 +38,10 @@ try:
 except:
     if qgis.utils.iface.actionShowPythonDialog().isChecked():
         qgis.utils.iface.messageBar().pushMessage("Your message here", level=qgis.core.Qgis.Info, duration=5)
-        pip.main(['install','sklearn'])
+        pip.main(['install','scikit-learn'])
     else: 
         qgis.utils.iface.actionShowPythonDialog().trigger()
-        pip.main(['install','sklearn'])
+        pip.main(['install','scikit-learn'])
 
 
 import os
@@ -311,10 +311,14 @@ class Dialog(QDialog, FORM_CLASS2):
         self.le_outfolderFS.setText('{}'.format(out_directory))
         outfolder_LEtext=self.le_outfolderFS.text()
         self.pb_runall.setEnabled(True)
-        if mask_var=='Mask':
+        if mask_var=='Clipping_by_mask':
             self.cb_analysis_FS.setEnabled(True) 
         elif mask_var=='AI-based_outlier_detection':
             self.cb_analysis_FS.setEnabled(False)
+        elif mask_var=='Cloud_masking':
+            self.cb_analysis_FS.setEnabled(False)       
+        elif mask_var=='Scaling':
+            self.cb_analysis_FS.setEnabled(False)              
         else:
             self.cb_analysis_FS.setEnabled(True)
         
@@ -347,7 +351,7 @@ class Dialog(QDialog, FORM_CLASS2):
                     raster_list_4.append(f) 
                     
             
-        if mask_var=='Mask':
+        if mask_var=='Clipping_by_mask':
             for f1 in raster_list_1:
                 raster_list.append(f1)
                 raster_list.append(raster_list_2[0])
@@ -357,6 +361,13 @@ class Dialog(QDialog, FORM_CLASS2):
         elif mask_var=='AI-based_outlier_detection':
             for f1 in raster_list_1:
                 raster_list.append(f1)
+        elif mask_var=='Cloud_masking':
+            for f1 in raster_list_1:
+                raster_list.append(f1)
+                raster_list.append(raster_list_2[0])                
+        elif mask_var=='Scaling':
+            for f1 in raster_list_1:
+                raster_list.append(f1)                  
         else:
         
             if len(raster_list_3)==0:
@@ -607,6 +618,45 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             self.le_parameter1AVHRR.setVisible(False)
             self.le_parameter2AVHRR.setVisible(False)
             self.le_parameter3AVHRR.setVisible(False)  
+            
+        elif itemAVHRR.text(0)=='Cloud_masking':
+            self.te_AVHRR.setText('Cloud mask AVHRR bands using Albedo method (0.9 < Albedo < 1.1) and Band 1 < 0.44 Threshold')
+            cols_num=2
+            header1='band1'
+            header2='band2'
+            header3= ' '
+            header4= ' ' 
+            tb_bandfolder2_state=True  
+            tb_bandfolder3_state=False  
+            tb_bandfolder4_state=False                  
+            self.pushButton.setEnabled(True) 
+            self.label_parameter1AVHRR.setVisible(False)
+            self.label_parameter2AVHRR.setVisible(False) 
+            self.label_parameter3AVHRR.setVisible(False)  
+            self.le_parameter1AVHRR.setVisible(False)
+            self.le_parameter2AVHRR.setVisible(False)
+            self.le_parameter3AVHRR.setVisible(False)             
+            
+        elif itemAVHRR.text(0)=='Scaling':
+            self.te_AVHRR.setText('Scale AVHRR bands')
+            cols_num=1
+            header1='Band'
+            header2= ' '
+            header3= ' '
+            header4= ' ' 
+            tb_bandfolder2_state=False  
+            tb_bandfolder3_state=False  
+            tb_bandfolder4_state=False                  
+            self.pushButton.setEnabled(True) 
+            self.label_parameter1AVHRR.setText('Scale factor') 
+            self.label_parameter2AVHRR.setText('Offset')
+            self.label_parameter1AVHRR.setVisible(True)
+            self.label_parameter2AVHRR.setVisible(True) 
+            self.label_parameter3AVHRR.setVisible(False)  
+            self.le_parameter1AVHRR.setVisible(True)
+            self.le_parameter2AVHRR.setVisible(True)
+            self.le_parameter3AVHRR.setVisible(False)               
+            
         elif itemAVHRR.text(0)=='AI-based_outlier_detection':
             self.te_AVHRR.setText('Detect outliers in Time series using Isolation forest')
             cols_num=1
@@ -901,7 +951,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             self.le_parameter2AVHRR.setVisible(False)
             self.le_parameter3AVHRR.setVisible(False)
 
-        elif itemAVHRR.text(0)=='Mask':
+        elif itemAVHRR.text(0)=='Clipping_by_mask':
             self.te_AVHRR.setText('Clip raster by mask layer')
             cols_num=2
             header1='Raster'
@@ -1062,7 +1112,45 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             self.label_parameter3Sentinel.setVisible(False)  
             self.le_parameter1Sentinel.setVisible(False)
             self.le_parameter2Sentinel.setVisible(False)
-            self.le_parameter3Sentinel.setVisible(False)         
+            self.le_parameter3Sentinel.setVisible(False)
+
+        elif itemSentinel.text(0)=='Cloud_masking':       
+            self.te_Sentinel.setText('Cloud mask Sentinel-2 bands using Scene Classifier Layer (SCL)')
+            cols_num=2
+            header1='Band'
+            header2='SCL'
+            header3= ' '
+            header4= ' ' 
+            tb_bandfolder2_state=True  
+            tb_bandfolder3_state=False  
+            tb_bandfolder4_state=False            
+            self.pushButton.setEnabled(True)   
+            self.label_parameter1Sentinel.setVisible(False)
+            self.label_parameter2Sentinel.setVisible(False) 
+            self.label_parameter3Sentinel.setVisible(False)  
+            self.le_parameter1Sentinel.setVisible(False)
+            self.le_parameter2Sentinel.setVisible(False)
+            self.le_parameter3Sentinel.setVisible(False)              
+
+        elif itemSentinel.text(0)=='Scaling':       
+            self.te_Sentinel.setText('Scale Sentinel-2 bands')
+            cols_num=1
+            header1='Band'
+            header2= ' '
+            header3= ' '
+            header4= ' ' 
+            tb_bandfolder2_state=False  
+            tb_bandfolder3_state=False  
+            tb_bandfolder4_state=False            
+            self.pushButton.setEnabled(True)  
+            self.label_parameter1Sentinel.setText('Scale factor')
+            self.label_parameter2Sentinel.setText('Offset')
+            self.label_parameter1Sentinel.setVisible(True)
+            self.label_parameter2Sentinel.setVisible(True) 
+            self.label_parameter3Sentinel.setVisible(False)  
+            self.le_parameter1Sentinel.setVisible(True)
+            self.le_parameter2Sentinel.setVisible(True)
+            self.le_parameter3Sentinel.setVisible(False)  
             
         elif itemSentinel.text(0)=='AI-based_outlier_detection':
             self.te_Sentinel.setText('Detect outliers in Time series using Isolation forest')
@@ -1870,7 +1958,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             self.le_parameter2Sentinel.setVisible(False)
             self.le_parameter3Sentinel.setVisible(False)              
             
-        elif itemSentinel.text(0)=='Mask':
+        elif itemSentinel.text(0)=='Clipping_by_mask':
             self.te_Sentinel.setText('Clip raster by mask layer')
             cols_num=2
             header1='Raster'
@@ -2306,7 +2394,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             self.le_parameter3Sentinel.setVisible(False)              
 
         elif itemSentinel.text(0)=='RR':
-            self.te_Landsat.setText('RR= (band8/band4)*(band3/band4)*(band8/band6)')
+            self.te_Sentinel.setText('RR= (band8/band4)*(band3/band4)*(band8/band6)')
             cols_num=4
             header1='band8'
             header2='band4'
@@ -2842,6 +2930,44 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             self.le_parameter1Landsat.setVisible(False)
             self.le_parameter2Landsat.setVisible(False)
             self.le_parameter3Landsat.setVisible(False)              
+
+        elif itemLandsat.text(0)=='Cloud_masking':
+            self.te_Landsat.setText('Cloud mask Landsat 8/9 bands using the QA band')
+            cols_num=2
+            header1='Band'
+            header2='QA Band'
+            header3= ' '
+            header4= ' ' 
+            tb_bandfolder2_state=True  
+            tb_bandfolder3_state=False  
+            tb_bandfolder4_state=False              
+            self.pushButton.setEnabled(True)      
+            self.label_parameter1Landsat.setVisible(False)
+            self.label_parameter2Landsat.setVisible(False) 
+            self.label_parameter3Landsat.setVisible(False)  
+            self.le_parameter1Landsat.setVisible(False)
+            self.le_parameter2Landsat.setVisible(False)
+            self.le_parameter3Landsat.setVisible(False)  
+
+        elif itemLandsat.text(0)=='Scaling':
+            self.te_Landsat.setText('Scale Landsat 8/9 bands')
+            cols_num=1
+            header1='Band'
+            header2= ' '
+            header3= ' '
+            header4= ' ' 
+            tb_bandfolder2_state=False  
+            tb_bandfolder3_state=False  
+            tb_bandfolder4_state=False              
+            self.pushButton.setEnabled(True)
+            self.label_parameter1Landsat.setText('Scale factor')
+            self.label_parameter2Landsat.setText('Offset')           
+            self.label_parameter1Landsat.setVisible(True)
+            self.label_parameter2Landsat.setVisible(True) 
+            self.label_parameter3Landsat.setVisible(False)  
+            self.le_parameter1Landsat.setVisible(True)
+            self.le_parameter2Landsat.setVisible(True)
+            self.le_parameter3Landsat.setVisible(False)  
 
         elif itemLandsat.text(0)=='AI-based_outlier_detection':
             self.te_Landsat.setText('Detect outliers in Time series using Isolation forest')
@@ -3541,7 +3667,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             self.le_parameter2Landsat.setVisible(False)
             self.le_parameter3Landsat.setVisible(False)  
             
-        elif itemLandsat.text(0)=='Mask':
+        elif itemLandsat.text(0)=='Clipping_by_mask':
             self.te_Landsat.setText('Clip raster by mask layer')
             cols_num=2
             header1='Raster'
@@ -4297,6 +4423,44 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             self.label_parameter3ASTER.setVisible(False)  
             self.le_parameter1ASTER.setVisible(False)
             self.le_parameter2ASTER.setVisible(False)
+            self.le_parameter3ASTER.setVisible(False)      
+
+        elif itemASTER.text(0)=='Scaling':
+            self.te_ASTER.setText('Scale ASTER bands')
+            cols_num=1
+            header1='Band'
+            header2= ' '
+            header3= ' '
+            header4= ' ' 
+            tb_bandfolder2_state=False  
+            tb_bandfolder3_state=False  
+            tb_bandfolder4_state=False              
+            self.pushButton.setEnabled(True)
+            self.label_parameter1ASTER.setText('Scale factor') 
+            self.label_parameter2ASTER.setText('Offset') 
+            self.label_parameter1ASTER.setVisible(True)
+            self.label_parameter2ASTER.setVisible(True) 
+            self.label_parameter3ASTER.setVisible(False)  
+            self.le_parameter1ASTER.setVisible(True)
+            self.le_parameter2ASTER.setVisible(True)
+            self.le_parameter3ASTER.setVisible(False) 
+
+        elif itemASTER.text(0)=='Cloud_masking':
+            self.te_ASTER.setText('Cloud mask ASTER bands using QA band')
+            cols_num=2
+            header1='Band'
+            header2='QA band'
+            header3= ' '
+            header4= ' ' 
+            tb_bandfolder2_state=True  
+            tb_bandfolder3_state=False  
+            tb_bandfolder4_state=False              
+            self.pushButton.setEnabled(True)   
+            self.label_parameter1ASTER.setVisible(False)
+            self.label_parameter2ASTER.setVisible(False) 
+            self.label_parameter3ASTER.setVisible(False)  
+            self.le_parameter1ASTER.setVisible(False)
+            self.le_parameter2ASTER.setVisible(False)
             self.le_parameter3ASTER.setVisible(False)              
 
         elif itemASTER.text(0)=='AI-based_outlier_detection':
@@ -4775,7 +4939,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             self.le_parameter2ASTER.setVisible(False)
             self.le_parameter3ASTER.setVisible(False) 
             
-        elif itemASTER.text(0)=='Mask':
+        elif itemASTER.text(0)=='Clipping_by_mask':
             self.te_ASTER.setText('Clip raster by mask layer')
             cols_num=2
             header1='Raster'
@@ -5243,6 +5407,44 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             self.le_parameter1MODIS.setVisible(False)
             self.le_parameter2MODIS.setVisible(False)
             self.le_parameter3MODIS.setVisible(False) 
+
+        elif itemMODIS.text(0)=='Cloud_masking':
+            self.te_MODIS.setText('Cloud mask MODIS bands using QA band')
+            cols_num=2
+            header1='Band'
+            header2='QA Band'
+            header3= ' '
+            header4= ' ' 
+            tb_bandfolder2_state=True  
+            tb_bandfolder3_state=False  
+            tb_bandfolder4_state=False              
+            self.pushButton.setEnabled(True) 
+            self.label_parameter1MODIS.setVisible(False)
+            self.label_parameter2MODIS.setVisible(False) 
+            self.label_parameter3MODIS.setVisible(False)  
+            self.le_parameter1MODIS.setVisible(False)
+            self.le_parameter2MODIS.setVisible(False)
+            self.le_parameter3MODIS.setVisible(False)
+            
+        elif itemMODIS.text(0)=='Scaling':
+            self.te_MODIS.setText('Scale MODIS bands')
+            cols_num=1
+            header1='Band'
+            header2= ' '
+            header3= ' '
+            header4= ' ' 
+            tb_bandfolder2_state=False  
+            tb_bandfolder3_state=False  
+            tb_bandfolder4_state=False              
+            self.pushButton.setEnabled(True) 
+            self.label_parameter1MODIS.setText('Scale factor')
+            self.label_parameter2MODIS.setText('Offset')
+            self.label_parameter1MODIS.setVisible(True)
+            self.label_parameter2MODIS.setVisible(True) 
+            self.label_parameter3MODIS.setVisible(False)  
+            self.le_parameter1MODIS.setVisible(True)
+            self.le_parameter2MODIS.setVisible(True)
+            self.le_parameter3MODIS.setVisible(False)            
 
         elif itemMODIS.text(0)=='AI-based_outlier_detection':
             self.te_MODIS.setText('Detect outliers in Time series using Isolation forest')
@@ -5760,7 +5962,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             self.le_parameter2MODIS.setVisible(False)
             self.le_parameter3MODIS.setVisible(False) 
             
-        elif itemMODIS.text(0)=='Mask':
+        elif itemMODIS.text(0)=='Clipping_by_mask':
             self.te_MODIS.setText('Clip raster by mask layer')
             cols_num=2
             header1='Raster'
@@ -6449,10 +6651,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -6503,6 +6701,214 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 subprocess.call(['afplay', sound_file])
              
             iface.messageBar().clearWidgets()
+
+        elif itemVAR_AVHRR is not None and itemVAR_AVHRR=='Scaling':
+                    #Progress
+            progressMessageBar = iface.messageBar().createMessage("Executing...")
+            progress = QProgressBar()
+            progress.setMaximum(10)
+            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+            progressMessageBar.layout().addWidget(progress)
+            iface.messageBar().pushWidget(progressMessageBar, Qgis.Info)
+            for i in range(10):
+                time.sleep(1)
+                progress.setValue(i+1)
+
+            for i in range(len(raster_list)):               
+                fp=os.path.join(raster_list[i])
+                rasterX=gdal.Open(fp, gdal.GA_ReadOnly)
+                array1=rasterX.ReadAsArray()
+                array1=array1.astype('float32')
+                name_str=''
+                for char in reversed(raster_list[i]):
+                    if char!='/' and char!='\\':
+                        name_str=name_str+char
+                    else:
+                        break
+
+                name= name_str[::-1]
+                
+                    
+                outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
+                name_str=''
+                
+                driver=gdal.GetDriverByName("GTiff")
+                outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
+                outds.SetGeoTransform(rasterX.GetGeoTransform())
+                outds.SetProjection(rasterX.GetProjection())
+
+
+                array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
+                try:
+                    scale = float(self.le_parameter1AVHRR.text())
+                except ValueError:
+                    scale = 1.0
+                
+                try:
+                    offset = float(self.le_parameter2AVHRR.text())
+                except ValueError:
+                    offset = 0.0
+                rassum= array1 * scale + offset    
+
+                
+           
+                if self.le_minAVHRR.text() and self.le_maxAVHRR.text():
+                    min_value= float(self.le_minAVHRR.text())
+                    max_value=float(self.le_maxAVHRR.text())
+                    rassum=np.ma.masked_where(rassum<(min_value), rassum)
+                    rassum=np.ma.masked_where(rassum>(max_value), rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minAVHRR.text() and self.le_maxAVHRR.text()=='':
+                    min_value= float(self.le_minAVHRR.text())
+                    rassum=np.ma.masked_where(rassum<min_value, rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minAVHRR.text()=='' and self.le_maxAVHRR.text():
+                    max_value= float(self.le_maxAVHRR.text())
+                    rassum=np.ma.masked_where(rassum>max_value, rassum) 
+                    rassum = rassum.filled(np.nan)
+                outds.WriteArray(rassum)
+                outds = None
+                if state=='True':
+                    a=np.nanmean(rassum)
+                    mean_list.append(a)
+                    b=np.nanstd(rassum)
+                    std_list.append(b)
+                    c=np.nanvar(rassum)
+                    var_list.append(c)
+                    d=np.nanmax(rassum)
+                    max_list.append(d)
+                    e=np.nanmin(rassum)
+                    min_list.append(e)
+            
+            duration = 1000  
+            freq = 440  
+            if system == 'Windows':
+                winsound.Beep(freq, duration)
+            elif system == 'Darwin':
+                sound_file=os.path.join(os.path.dirname(__file__),'beep.wav')
+                subprocess.call(['afplay', sound_file])
+             
+            iface.messageBar().clearWidgets()
+
+
+        elif itemVAR_AVHRR=='Cloud_masking':
+                    #Progress
+            progressMessageBar = iface.messageBar().createMessage("Executing...")
+            progress = QProgressBar()
+            progress.setMaximum(10)
+            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+            progressMessageBar.layout().addWidget(progress)
+            iface.messageBar().pushWidget(progressMessageBar, Qgis.Info)
+            for i in range(10):
+                time.sleep(1)
+                progress.setValue(i+1)
+            for i in range(0,len(raster_list)-1,2):               
+                fp=os.path.join(raster_list[i])
+                fp2=os.path.join(raster_list[i+1])           
+                rasterX=gdal.Open(fp, gdal.GA_ReadOnly)
+                rasterX2=gdal.Open(fp2, gdal.GA_ReadOnly)
+                array1=rasterX.ReadAsArray()
+                array2=rasterX2.ReadAsArray()
+                if array1.shape != array2.shape:
+                    # Resample QA band to match array1 dimensions
+                    temp_ds = gdal.GetDriverByName('MEM').Create('', rasterX.RasterXSize, rasterX.RasterYSize, 1, gdal.GDT_UInt16)
+                    temp_ds.SetGeoTransform(rasterX.GetGeoTransform())
+                    temp_ds.SetProjection(rasterX.GetProjection())
+                    gdal.ReprojectImage(rasterX2, temp_ds, rasterX2.GetProjection(), rasterX.GetProjection(), gdal.GRA_NearestNeighbour)
+                    array2 = temp_ds.ReadAsArray()
+                    temp_ds = None  # clean up
+                array1=array1.astype('float32')
+                array2=array2.astype('uint16')    
+                name_str=''
+                for char in reversed(raster_list[i]):
+                    if char!='/' and char!='\\':
+                        name_str=name_str+char
+                    else:
+                        break
+
+                name= name_str[::-1]
+                
+                    
+                outputfilename = outfolder_LEtext+'/'+itemVAR_AVHRR+'_'+name
+                #outputfilename_ch2 = outfolder_LEtext+'/'+itemVAR_AVHRR+'_CH2_'+name
+
+
+                name_str=''
+                
+                driver=gdal.GetDriverByName("GTiff")
+                outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
+                outds.SetGeoTransform(rasterX.GetGeoTransform())
+                outds.SetProjection(rasterX.GetProjection())
+
+                
+                #driver=gdal.GetDriverByName("GTiff")
+                #outds2=driver.Create(outputfilename_ch2, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
+                #outds2.SetGeoTransform(rasterX.GetGeoTransform())
+                #outds2.SetProjection(rasterX.GetProjection())
+
+                
+                #array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
+
+                
+                """array2[array2 == 0] = np.nan
+                albedo = array1 / array2
+                albedo_mask = (albedo >= 0.9) & (albedo <= 1.1)
+                ch1_mask = array1 <= 0.44
+                cloud_mask = albedo_mask & ch1_mask
+
+                array1 = np.where(cloud_mask, array1, np.nan)
+                array2 = np.where(cloud_mask, array2, np.nan)
+
+                rassum = array1
+                rassum2 = array2"""
+                bits_0_2 = array2 & 0b111
+                cloud_mask = np.isin(bits_0_2, [1, 2, 3])
+                array1 = np.where(cloud_mask, np.nan, array1)
+                rassum=array1
+           
+                if self.le_minAVHRR.text() and self.le_maxAVHRR.text():
+                    min_value= float(self.le_minAVHRR.text())
+                    max_value=float(self.le_maxAVHRR.text())
+                    rassum=np.ma.masked_where(rassum<(min_value), rassum)
+                    rassum=np.ma.masked_where(rassum>(max_value), rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minAVHRR.text() and self.le_maxAVHRR.text()=='':
+                    min_value= float(self.le_minAVHRR.text())
+                    rassum=np.ma.masked_where(rassum<min_value, rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minAVHRR.text()=='' and self.le_maxAVHRR.text():
+                    max_value= float(self.le_maxAVHRR.text())
+                    rassum=np.ma.masked_where(rassum>max_value, rassum) 
+                    rassum = rassum.filled(np.nan)
+                out_band = outds.GetRasterBand(1)
+                out_band.SetNoDataValue(-9999)
+                out_band.WriteArray(rassum)
+                
+                #outds2.GetRasterBand(1).WriteArray(rassum2)
+                outds = None
+                #outds2 = None
+                if state=='True':
+                    a=np.nanmean(rassum)
+                    mean_list.append(a)
+                    b=np.nanstd(rassum)
+                    std_list.append(b)
+                    c=np.nanvar(rassum)
+                    var_list.append(c)
+                    d=np.nanmax(rassum)
+                    max_list.append(d)
+                    e=np.nanmin(rassum)
+                    min_list.append(e)
+            
+            duration = 1000  
+            freq = 440  
+            if system == 'Windows':
+                winsound.Beep(freq, duration)
+            elif system == 'Darwin':
+                sound_file=os.path.join(os.path.dirname(__file__),'beep.wav')
+                subprocess.call(['afplay', sound_file])
+             
+            iface.messageBar().clearWidgets()
+            
             
         elif itemVAR_AVHRR=='AI-based_outlier_detection':
 
@@ -6709,11 +7115,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
+
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -6800,13 +7202,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -6889,12 +7285,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -6978,12 +7368,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -7067,11 +7452,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
                 #array2[array2==0]=np.nan               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
@@ -7155,13 +7535,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -7244,13 +7618,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -7332,13 +7700,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -7420,11 +7782,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan               
+           
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -7508,13 +7866,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -7595,13 +7947,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -7682,13 +8028,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -7769,13 +8109,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -7857,13 +8191,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -7942,13 +8270,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -7995,7 +8317,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 winsound.Beep(freq, duration)          
             iface.messageBar().clearWidgets()
 
-        elif itemVAR_AVHRR=='Mask':
+        elif itemVAR_AVHRR=='Clipping_by_mask':
             #Progress
             progressMessageBar = iface.messageBar().createMessage("Executing...")
             progress = QProgressBar()
@@ -8066,10 +8388,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -8154,16 +8473,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan
-                #array3[array3==0]=np.nan                
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -8247,13 +8557,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -8338,11 +8642,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan               
+                                 
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -8426,13 +8726,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_AVHRR+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -8583,11 +8877,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+                         
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -8636,6 +8926,186 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             if system == 'Windows':
                 winsound.Beep(freq, duration)           
             iface.messageBar().clearWidgets()
+
+        elif itemVAR_Sentinel=='Scaling':
+            #Progress
+            progressMessageBar = iface.messageBar().createMessage('Executing...')
+            progress = QProgressBar()
+            progress.setMaximum(10)
+            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+            progressMessageBar.layout().addWidget(progress)
+            iface.messageBar().pushWidget(progressMessageBar, Qgis.Info)
+            for i in range(10):
+                time.sleep(1)
+                progress.setValue(i+1)
+                
+            for i in range(len(raster_list)):               
+                fp=os.path.join(raster_list[i])
+                rasterX=gdal.Open(fp, gdal.GA_ReadOnly)
+                array1=rasterX.ReadAsArray()
+                array1=array1.astype('float32')
+                name_str=''
+                for char in reversed(raster_list[i]):
+                    if char!='/' and char!='\\':
+                        name_str=name_str+char
+                    else:
+                        break
+
+                name= name_str[::-1]
+                
+                    
+                outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
+                name_str=''
+                
+                driver=gdal.GetDriverByName("GTiff")
+                outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
+                outds.SetGeoTransform(rasterX.GetGeoTransform())
+                outds.SetProjection(rasterX.GetProjection())
+
+                array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
+                try:
+                    scale = float(self.le_parameter1Sentinel.text())
+                except ValueError:
+                    scale = 1.0
+                
+                try:
+                    offset = float(self.le_parameter2Sentinel.text())
+                except ValueError:
+                    offset = 0.0
+                rassum= array1 * scale + offset    
+ 
+                if self.le_minSentinel.text() and self.le_maxSentinel.text():
+                    min_value= float(self.le_minSentinel.text())
+                    max_value=float(self.le_maxSentinel.text())
+                    rassum=np.ma.masked_where(rassum<(min_value), rassum)
+                    rassum=np.ma.masked_where(rassum>(max_value), rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minSentinel.text() and self.le_maxSentinel.text()=='':
+                    min_value= float(self.le_minSentinel.text())
+                    rassum=np.ma.masked_where(rassum<min_value, rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minSentinel.text()=='' and self.le_maxSentinel.text():
+                    max_value= float(self.le_maxSentinel.text())
+                    rassum=np.ma.masked_where(rassum>max_value, rassum) 
+                    rassum = rassum.filled(np.nan)
+                    
+                outds.WriteArray(rassum)
+                outds = None
+                if state=='True':
+                    a=np.nanmean(rassum)
+                    mean_list.append(a)
+                    b=np.nanstd(rassum)
+                    std_list.append(b)
+                    c=np.nanvar(rassum)
+                    var_list.append(c)
+                    d=np.nanmax(rassum)
+                    max_list.append(d)
+                    e=np.nanmin(rassum)
+                    min_list.append(e)
+                    
+            
+            progressMessageBar = iface.messageBar().createMessage("Done...")                
+            duration = 1000  
+            freq = 440  
+            if system == 'Windows':
+                winsound.Beep(freq, duration)           
+            iface.messageBar().clearWidgets()
+
+
+        elif itemVAR_Sentinel=='Cloud_masking':
+            #Progress
+            progressMessageBar = iface.messageBar().createMessage('Executing...')
+            progress = QProgressBar()
+            progress.setMaximum(10)
+            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+            progressMessageBar.layout().addWidget(progress)
+            iface.messageBar().pushWidget(progressMessageBar, Qgis.Info)
+            for i in range(10):
+                time.sleep(1)
+                progress.setValue(i+1)
+                
+            for i in range(0,len(raster_list)-1,2):            
+                fp=os.path.join(raster_list[i])
+                fp2=os.path.join(raster_list[i+1])           
+                rasterX=gdal.Open(fp, gdal.GA_ReadOnly)
+                rasterX2=gdal.Open(fp2, gdal.GA_ReadOnly)
+                array1=rasterX.ReadAsArray()
+                array2=rasterX2.ReadAsArray()
+                if array1.shape != array2.shape:
+                    # Resample QA band to match array1 dimensions
+                    temp_ds = gdal.GetDriverByName('MEM').Create('', rasterX.RasterXSize, rasterX.RasterYSize, 1, gdal.GDT_UInt16)
+                    temp_ds.SetGeoTransform(rasterX.GetGeoTransform())
+                    temp_ds.SetProjection(rasterX.GetProjection())
+                    gdal.ReprojectImage(rasterX2, temp_ds, rasterX2.GetProjection(), rasterX.GetProjection(), gdal.GRA_NearestNeighbour)
+                    array2 = temp_ds.ReadAsArray()
+                    temp_ds = None  # clean up
+                array1=array1.astype('float32')
+                array2=array2.astype('uint16') 
+                name_str=''
+                for char in reversed(raster_list[i]):
+                    if char!='/' and char!='\\':
+                        name_str=name_str+char
+                    else:
+                        break
+
+                name= name_str[::-1]
+                
+                    
+                outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
+                name_str=''
+                
+               
+                driver=gdal.GetDriverByName("GTiff")
+                outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
+                outds.SetGeoTransform(rasterX.GetGeoTransform())
+                outds.SetProjection(rasterX.GetProjection())
+
+                array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
+                   
+
+                invalid_classes = [3, 8, 9, 10]
+                cloud_mask = ~np.isin(array2, invalid_classes)
+                array1 = np.where(cloud_mask, array1, np.nan)
+
+                rassum = array1
+ 
+                if self.le_minSentinel.text() and self.le_maxSentinel.text():
+                    min_value= float(self.le_minSentinel.text())
+                    max_value=float(self.le_maxSentinel.text())
+                    rassum=np.ma.masked_where(rassum<(min_value), rassum)
+                    rassum=np.ma.masked_where(rassum>(max_value), rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minSentinel.text() and self.le_maxSentinel.text()=='':
+                    min_value= float(self.le_minSentinel.text())
+                    rassum=np.ma.masked_where(rassum<min_value, rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minSentinel.text()=='' and self.le_maxSentinel.text():
+                    max_value= float(self.le_maxSentinel.text())
+                    rassum=np.ma.masked_where(rassum>max_value, rassum) 
+                    rassum = rassum.filled(np.nan)
+                    
+                outds.WriteArray(rassum)
+                outds = None
+                if state=='True':
+                    a=np.nanmean(rassum)
+                    mean_list.append(a)
+                    b=np.nanstd(rassum)
+                    std_list.append(b)
+                    c=np.nanvar(rassum)
+                    var_list.append(c)
+                    d=np.nanmax(rassum)
+                    max_list.append(d)
+                    e=np.nanmin(rassum)
+                    min_list.append(e)
+                    
+            
+            progressMessageBar = iface.messageBar().createMessage("Done...")                
+            duration = 1000  
+            freq = 440  
+            if system == 'Windows':
+                winsound.Beep(freq, duration)           
+            iface.messageBar().clearWidgets()
+            
                    
         elif itemVAR_Sentinel=='AI-based_outlier_detection':
             # Progress
@@ -8793,11 +9263,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan         
+                        
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -8881,12 +9347,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -8973,10 +9434,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                     name_str=''
                     
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -9063,12 +9520,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -9148,13 +9599,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+                                
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -9235,11 +9680,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -9331,11 +9772,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan             
+                             
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -9425,12 +9862,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -9512,11 +9944,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -9597,13 +10025,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array1[array1==0]=np.nan
-                array2[array2==0]=np.nan                
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -9686,13 +10108,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array1[array1==0]=np.nan
-                array2[array2==0]=np.nan                
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -9785,15 +10201,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
-                    array3[array3<0]=np.nan
-                    array3[array3>10000]=np.nan  
-                    array4[array4<0]=np.nan
-                    array4[array4>10000]=np.nan                
+                                   
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -9880,13 +10288,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -9967,13 +10369,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan                
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -10058,15 +10454,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan   
-                #array1[array1==0]=np.nan
-                #array2[array2==0]=np.nan
-                ##array3[array3==0]=np.nan                
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -10153,13 +10540,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan           
+         
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -10240,11 +10621,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -10323,11 +10700,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -10407,11 +10780,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -10490,11 +10859,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -10577,10 +10942,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                     name_str=''
                     
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan               
+             
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -10667,13 +11029,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan             
+                            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -10760,13 +11116,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
-                    array3[array3<0]=np.nan
-                    array3[array3>10000]=np.nan                    
+                 
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -10859,13 +11209,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
-                    array3[array3<0]=np.nan
-                    array3[array3>10000]=np.nan             
+        
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -10953,11 +11297,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11039,11 +11379,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan              
+                                 
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11128,11 +11464,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+                         
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11211,11 +11543,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11301,10 +11629,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                     name_str=''
                     
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11392,13 +11716,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11479,11 +11797,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11562,11 +11876,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11645,11 +11955,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11728,11 +12034,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+        
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11811,11 +12113,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11894,11 +12192,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -11980,11 +12274,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -12067,13 +12357,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan            
+                            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -12154,11 +12438,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan         
+        
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -12241,13 +12521,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -12295,7 +12569,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 winsound.Beep(freq, duration)           
             iface.messageBar().clearWidgets()                
 
-        elif itemVAR_Sentinel=='Mask':
+        elif itemVAR_Sentinel=='Clipping_by_mask':
             #Progress
             progressMessageBar = iface.messageBar().createMessage("Executing...")
             progress = QProgressBar()
@@ -12367,13 +12641,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                 
+                                
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -12454,11 +12722,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -12541,13 +12805,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan            
+                           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -12628,11 +12886,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -12715,13 +12969,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -12803,11 +13051,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -12893,11 +13137,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -12976,11 +13216,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -13064,11 +13300,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan               
+                                  
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -13151,11 +13383,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -13236,11 +13464,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+                            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -13321,11 +13545,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -13406,11 +13626,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -13491,11 +13707,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -13575,11 +13787,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+                           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -13658,11 +13866,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -13743,10 +13947,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -13825,11 +14026,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -13913,12 +14110,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14005,13 +14197,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                    
+                                   
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14098,13 +14284,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14195,12 +14375,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14287,12 +14461,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan             
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14381,15 +14550,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan               
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14474,11 +14635,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14558,10 +14715,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14641,10 +14795,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14723,11 +14874,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14807,10 +14954,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14893,13 +15037,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                  
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -14981,11 +15119,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -15072,15 +15206,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan                 
+                 
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -15164,11 +15290,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -15249,11 +15371,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -15333,11 +15451,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -15416,11 +15530,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -15507,15 +15617,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan                 
+                                 
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -15606,15 +15708,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan                   
+                                
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -15703,11 +15797,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -15788,10 +15878,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -15870,11 +15957,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -15953,11 +16036,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -16046,14 +16125,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan                 
+                
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -16140,10 +16212,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+                
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -16223,11 +16292,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -16307,11 +16372,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+                            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -16395,12 +16456,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan             
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -16485,13 +16541,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan              
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -16576,13 +16626,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan            
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -16667,13 +16711,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan           
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -16762,15 +16800,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan                  
+                  
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -16862,15 +16892,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan               
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -16952,11 +16974,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -17040,13 +17058,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Sentinel+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
+ 
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -17197,11 +17209,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                #array1[array1<0]=np.nan
-                #array1[array1>10000]=np.nan
-                #array2[array2<0]=np.nan
-                #array2[array2>10000]=np.nan              
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -17248,6 +17256,181 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             if system == 'Windows':
                 winsound.Beep(freq, duration)           
             iface.messageBar().clearWidgets()        
+
+        elif itemVAR_Landsat=='Scaling':
+                    #Progress
+            progressMessageBar = iface.messageBar().createMessage("Executing...")
+            progress = QProgressBar()
+            progress.setMaximum(10)
+            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+            progressMessageBar.layout().addWidget(progress)
+            iface.messageBar().pushWidget(progressMessageBar, Qgis.Info)
+            for i in range(10):
+                time.sleep(1)
+                progress.setValue(i+1)
+            for i in range(len(raster_list)):               
+                fp=os.path.join(raster_list[i])
+                rasterX=gdal.Open(fp, gdal.GA_ReadOnly)
+                array1=rasterX.ReadAsArray()
+                array1=array1.astype('float32')
+                name_str=''
+                for char in reversed(raster_list[i]):
+                    if char!='/' and char!='\\':
+                        name_str=name_str+char
+                    else:
+                        break
+
+                name= name_str[::-1]
+                
+                    
+                outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
+                name_str=''
+                
+                driver=gdal.GetDriverByName("GTiff")
+                outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
+                outds.SetGeoTransform(rasterX.GetGeoTransform())
+                outds.SetProjection(rasterX.GetProjection())
+
+
+                array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
+                try:
+                    scale = float(self.le_parameter1Landsat.text())
+                except ValueError:
+                    scale = 1.0
+                
+                try:
+                    offset = float(self.le_parameter2Landsat.text())
+                except ValueError:
+                    offset = 0.0
+                rassum= array1 * scale + offset    
+
+                if self.le_minLandsat.text() and self.le_maxLandsat.text():
+                    min_value= float(self.le_minLandsat.text())
+                    max_value=float(self.le_maxLandsat.text())
+                    rassum=np.ma.masked_where(rassum<(min_value), rassum)
+                    rassum=np.ma.masked_where(rassum>(max_value), rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minLandsat.text() and self.le_maxLandsat.text()=='':
+                    min_value= float(self.le_minLandsat.text())
+                    rassum=np.ma.masked_where(rassum<min_value, rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minLandsat.text()=='' and self.le_maxLandsat.text():
+                    max_value= float(self.le_maxLandsat.text())
+                    rassum=np.ma.masked_where(rassum>max_value, rassum) 
+                    rassum = rassum.filled(np.nan) 
+                outds.WriteArray(rassum)
+                outds = None
+                if state=='True':
+                    a=np.nanmean(rassum)
+                    mean_list.append(a)
+                    b=np.nanstd(rassum)
+                    std_list.append(b)
+                    c=np.nanvar(rassum)
+                    var_list.append(c)
+                    d=np.nanmax(rassum)
+                    max_list.append(d)
+                    e=np.nanmin(rassum)
+                    min_list.append(e)
+                    
+
+            duration = 1000  
+            freq = 440  
+            if system == 'Windows':
+                winsound.Beep(freq, duration)           
+            iface.messageBar().clearWidgets()      
+
+        elif itemVAR_Landsat=='Cloud_masking':
+                    #Progress
+            progressMessageBar = iface.messageBar().createMessage("Executing...")
+            progress = QProgressBar()
+            progress.setMaximum(10)
+            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+            progressMessageBar.layout().addWidget(progress)
+            iface.messageBar().pushWidget(progressMessageBar, Qgis.Info)
+            for i in range(10):
+                time.sleep(1)
+                progress.setValue(i+1)
+            for i in range(0,len(raster_list)-1,2):        
+                
+                fp=os.path.join(raster_list[i])
+                fp2=os.path.join(raster_list[i+1])           
+                rasterX=gdal.Open(fp, gdal.GA_ReadOnly)
+                rasterX2=gdal.Open(fp2, gdal.GA_ReadOnly)
+                array1=rasterX.ReadAsArray()
+                array2=rasterX2.ReadAsArray()
+                if array1.shape != array2.shape:
+                    # Resample QA band to match array1 dimensions
+                    temp_ds = gdal.GetDriverByName('MEM').Create('', rasterX.RasterXSize, rasterX.RasterYSize, 1, gdal.GDT_UInt16)
+                    temp_ds.SetGeoTransform(rasterX.GetGeoTransform())
+                    temp_ds.SetProjection(rasterX.GetProjection())
+                    gdal.ReprojectImage(rasterX2, temp_ds, rasterX2.GetProjection(), rasterX.GetProjection(), gdal.GRA_NearestNeighbour)
+                    array2 = temp_ds.ReadAsArray()
+                    temp_ds = None  # clean up
+                array1=array1.astype('float32')
+                array2=array2.astype('uint16')                         
+                name_str=''
+                for char in reversed(raster_list[i]):
+                    if char!='/' and char!='\\':
+                        name_str=name_str+char
+                    else:
+                        break
+
+                name= name_str[::-1]
+                
+                    
+                outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
+                name_str=''
+                
+            
+                driver=gdal.GetDriverByName("GTiff")
+                outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
+                outds.SetGeoTransform(rasterX.GetGeoTransform())
+                outds.SetProjection(rasterX.GetProjection())
+
+                array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
+
+                invalid_classes = [21826, 21890, 22080, 22144, 22280,23888,23952,24088,24216,24344,24472,54596,54852,55052]
+                cloud_mask = ~np.isin(array2, invalid_classes)
+
+                array1 = np.where(cloud_mask, array1, np.nan)
+      
+                rassum=array1               
+
+                if self.le_minLandsat.text() and self.le_maxLandsat.text():
+                    min_value= float(self.le_minLandsat.text())
+                    max_value=float(self.le_maxLandsat.text())
+                    rassum=np.ma.masked_where(rassum<(min_value), rassum)
+                    rassum=np.ma.masked_where(rassum>(max_value), rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minLandsat.text() and self.le_maxLandsat.text()=='':
+                    min_value= float(self.le_minLandsat.text())
+                    rassum=np.ma.masked_where(rassum<min_value, rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minLandsat.text()=='' and self.le_maxLandsat.text():
+                    max_value= float(self.le_maxLandsat.text())
+                    rassum=np.ma.masked_where(rassum>max_value, rassum) 
+                    rassum = rassum.filled(np.nan) 
+                outds.WriteArray(rassum)
+                outds = None
+                if state=='True':
+                    a=np.nanmean(rassum)
+                    mean_list.append(a)
+                    b=np.nanstd(rassum)
+                    std_list.append(b)
+                    c=np.nanvar(rassum)
+                    var_list.append(c)
+                    d=np.nanmax(rassum)
+                    max_list.append(d)
+                    e=np.nanmin(rassum)
+                    min_list.append(e)
+                    
+
+            duration = 1000  
+            freq = 440  
+            if system == 'Windows':
+                winsound.Beep(freq, duration)           
+            iface.messageBar().clearWidgets()  
+
             
         elif itemVAR_Landsat=='AI-based_outlier_detection':
             # Progress
@@ -17404,11 +17587,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -17492,13 +17671,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                 
+                 
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -17584,11 +17757,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
+
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -17674,11 +17843,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -17758,11 +17923,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -17843,11 +18004,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -17929,11 +18086,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan             
+            
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18019,11 +18172,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18104,11 +18253,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+                               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18198,15 +18343,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
-                    array3[array3<0]=np.nan
-                    array3[array3>10000]=np.nan  
-                    array4[array4<0]=np.nan
-                    array4[array4>10000]=np.nan                
+                                
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18293,11 +18430,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18382,13 +18515,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                 
+                 
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18470,11 +18597,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18554,11 +18677,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18638,11 +18757,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18722,10 +18837,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18807,11 +18919,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan               
+              
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18898,13 +19006,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -18992,13 +19094,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
-                    array3[array3<0]=np.nan
-                    array3[array3>10000]=np.nan                    
+                   
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -19092,13 +19188,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
-                    array3[array3<0]=np.nan
-                    array3[array3>10000]=np.nan            
+         
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -19186,11 +19276,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -19272,11 +19358,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan            
+           
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -19361,11 +19443,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+       
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -19444,11 +19522,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -19527,11 +19601,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -19610,11 +19680,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+         
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -19699,10 +19765,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                     name_str=''
                     
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -19785,11 +19847,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                #array1[array1<0]=np.nan
-                #array1[array1>10000]=np.nan
-                #array2[array2<0]=np.nan
-                #array2[array2>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -19868,11 +19926,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                #array1[array1<0]=np.nan
-                #array1[array1>10000]=np.nan
-                #array2[array2<0]=np.nan
-                #array2[array2>10000]=np.nan                
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -19951,11 +20005,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+                          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -20034,11 +20084,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -20117,11 +20163,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -20210,15 +20252,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan               
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -20302,11 +20336,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -20389,13 +20419,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan            
+                            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -20476,11 +20500,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -20565,12 +20585,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                 
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -20618,7 +20632,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 winsound.Beep(freq, duration)           
             iface.messageBar().clearWidgets() 
                 
-        elif itemVAR_Landsat=='Mask':
+        elif itemVAR_Landsat=='Clipping_by_mask':
             #Progress
             progressMessageBar = iface.messageBar().createMessage("Executing...")
             progress = QProgressBar()
@@ -20690,13 +20704,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -20777,11 +20785,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+                           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -20864,13 +20868,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan              
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -20951,11 +20949,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+         
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -21038,13 +21032,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                   
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -21126,11 +21114,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                #array1[array1<0]=np.nan
-                #array1[array1>10000]=np.nan
-                #array2[array2<0]=np.nan
-                #array2[array2>10000]=np.nan          
+                        
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -21216,11 +21200,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -21299,11 +21279,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                #array1[array1<0]=np.nan
-                #array1[array1>10000]=np.nan
-                #array2[array2<0]=np.nan
-                #array2[array2>10000]=np.nan              
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -21387,11 +21363,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan               
+                                 
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -21474,11 +21446,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
+
              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
@@ -21559,11 +21527,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
+
             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
@@ -21645,11 +21609,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+         
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -21731,10 +21691,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -21813,11 +21770,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -21900,13 +21853,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -21994,13 +21941,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan             
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -22086,13 +22027,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -22173,11 +22108,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                #array1[array1<0]=np.nan
-                #array1[array1>10000]=np.nan
-                #array2[array2<0]=np.nan
-                #array2[array2>10000]=np.nan              
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -22260,13 +22191,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                
+                           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -22353,12 +22278,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan             
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -22440,11 +22360,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -22523,11 +22439,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -22614,22 +22526,13 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan               
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
                 outds.SetProjection(rasterX.GetProjection())
 
 
-                array4= array4/10000
                 array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
                 array2 = np.ma.masked_array(array2, ~np.isfinite(array2)).filled(np.nan)
                 array3 = np.ma.masked_array(array3, ~np.isfinite(array3)).filled(np.nan)  
@@ -22708,10 +22611,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -22793,10 +22693,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -22876,11 +22773,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -22968,22 +22861,13 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                #array1[array1<0]=np.nan
-                #array1[array1>10000]=np.nan
-                #array2[array2<0]=np.nan
-                #array2[array2>10000]=np.nan
-                #array3[array3<0]=np.nan
-                #array3[array3>10000]=np.nan  
-                #array4[array4<0]=np.nan
-                #array4[array4>10000]=np.nan                
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
                 outds.SetProjection(rasterX.GetProjection())
 
 
-                array4= array4/10000
                 array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
                 array2 = np.ma.masked_array(array2, ~np.isfinite(array2)).filled(np.nan)
                 array3 = np.ma.masked_array(array3, ~np.isfinite(array3)).filled(np.nan)  
@@ -23068,21 +22952,12 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                #array1[array1<0]=np.nan
-                #array1[array1>10000]=np.nan
-                #array2[array2<0]=np.nan
-                #array2[array2>10000]=np.nan
-                #array3[array3<0]=np.nan
-                #array3[array3>10000]=np.nan  
-                #array4[array4<0]=np.nan
-                #array4[array4>10000]=np.nan                  
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
                 outds.SetProjection(rasterX.GetProjection())
 
 
-                array4= array4/10000
                 array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
                 array2 = np.ma.masked_array(array2, ~np.isfinite(array2)).filled(np.nan)
                 array3 = np.ma.masked_array(array3, ~np.isfinite(array3)).filled(np.nan)  
@@ -23163,10 +23038,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -23247,10 +23119,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -23330,10 +23199,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -23413,10 +23279,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan           
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -23496,10 +23359,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -23588,21 +23448,13 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan     
+   
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
                 outds.SetProjection(rasterX.GetProjection())
 
 
-                array4= array4/10000
                 array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
                 array2 = np.ma.masked_array(array2, ~np.isfinite(array2)).filled(np.nan)
                 array3 = np.ma.masked_array(array3, ~np.isfinite(array3)).filled(np.nan)
@@ -23680,11 +23532,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -23763,10 +23611,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -23855,15 +23700,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan               
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -23946,10 +23783,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan        
+       
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -24029,10 +23863,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_Landsat+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -24183,10 +24014,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -24232,6 +24060,177 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             if system == 'Windows':
                 winsound.Beep(freq, duration)           
             iface.messageBar().clearWidgets()             
+
+        elif itemVAR_ASTER=='Scaling':
+                    #Progress
+            progressMessageBar = iface.messageBar().createMessage("Executing...")
+            progress = QProgressBar()
+            progress.setMaximum(10)
+            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+            progressMessageBar.layout().addWidget(progress)
+            iface.messageBar().pushWidget(progressMessageBar, Qgis.Info)
+            for i in range(10):
+                time.sleep(1)
+                progress.setValue(i+1)
+            for i in range(len(raster_list)):               
+                fp=os.path.join(raster_list[i])
+                rasterX=gdal.Open(fp, gdal.GA_ReadOnly)
+                array1=rasterX.ReadAsArray()
+                array1=array1.astype('float32')
+                name_str=''
+                for char in reversed(raster_list[i]):
+                    if char!='/' and char!='\\':
+                        name_str=name_str+char
+                    else:
+                        break
+
+                name= name_str[::-1]
+                
+                    
+                outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
+                name_str=''
+                
+               
+                driver=gdal.GetDriverByName("GTiff")
+                outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
+                outds.SetGeoTransform(rasterX.GetGeoTransform())
+                outds.SetProjection(rasterX.GetProjection())
+
+
+                array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
+                try:
+                    scale = float(self.le_parameter1ASTER.text())
+                except ValueError:
+                    scale = 1.0
+                
+                try:
+                    offset = float(self.le_parameter2ASTER.text())
+                except ValueError:
+                    offset = 0.0
+                rassum= array1 * scale + offset    
+ 
+                if self.le_minASTER.text() and self.le_maxASTER.text():
+                    min_value= float(self.le_minASTER.text())
+                    max_value=float(self.le_maxASTER.text())
+                    rassum=np.ma.masked_where(rassum<(min_value), rassum)
+                    rassum=np.ma.masked_where(rassum>(max_value), rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minASTER.text() and self.le_maxASTER.text()=='':
+                    min_value= float(self.le_minASTER.text())
+                    rassum=np.ma.masked_where(rassum<min_value, rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minASTER.text()=='' and self.le_maxASTER.text():
+                    max_value= float(self.le_maxASTER.text())
+                    rassum=np.ma.masked_where(rassum>max_value, rassum) 
+                    rassum = rassum.filled(np.nan) 
+                outds.WriteArray(rassum)
+                outds = None
+                if state=='True':
+                    a=np.nanmean(rassum)
+                    mean_list.append(a)
+                    b=np.nanstd(rassum)
+                    std_list.append(b)
+                    c=np.nanvar(rassum)
+                    var_list.append(c)
+                    d=np.nanmax(rassum)
+                    max_list.append(d)
+                    e=np.nanmin(rassum)
+                    min_list.append(e)
+
+            duration = 1000  
+            freq = 440  
+            if system == 'Windows':
+                winsound.Beep(freq, duration)           
+            iface.messageBar().clearWidgets()             
+
+
+        elif itemVAR_ASTER=='Cloud_masking':
+                    #Progress
+            progressMessageBar = iface.messageBar().createMessage("Executing...")
+            progress = QProgressBar()
+            progress.setMaximum(10)
+            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+            progressMessageBar.layout().addWidget(progress)
+            iface.messageBar().pushWidget(progressMessageBar, Qgis.Info)
+            for i in range(10):
+                time.sleep(1)
+                progress.setValue(i+1)
+            for i in range(0,len(raster_list)-1,2):
+            
+                fp=os.path.join(raster_list[i])
+                fp2=os.path.join(raster_list[i+1])           
+                rasterX=gdal.Open(fp, gdal.GA_ReadOnly)
+                rasterX2=gdal.Open(fp2, gdal.GA_ReadOnly)
+                array1=rasterX.ReadAsArray()
+                array2=rasterX2.ReadAsArray()
+                if array1.shape != array2.shape:
+                    # Resample QA band to match array1 dimensions
+                    temp_ds = gdal.GetDriverByName('MEM').Create('', rasterX.RasterXSize, rasterX.RasterYSize, 1, gdal.GDT_UInt16)
+                    temp_ds.SetGeoTransform(rasterX.GetGeoTransform())
+                    temp_ds.SetProjection(rasterX.GetProjection())
+                    gdal.ReprojectImage(rasterX2, temp_ds, rasterX2.GetProjection(), rasterX.GetProjection(), gdal.GRA_NearestNeighbour)
+                    array2 = temp_ds.ReadAsArray()
+                    temp_ds = None  # clean up
+                array1=array1.astype('float32')
+                array2=array2.astype('uint16')                        
+                name_str=''
+                for char in reversed(raster_list[i]):
+                    if char!='/' and char!='\\':
+                        name_str=name_str+char
+                    else:
+                        break
+
+                name= name_str[::-1]
+                
+                    
+                outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
+                name_str=''
+                             
+                driver=gdal.GetDriverByName("GTiff")
+                outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
+                outds.SetGeoTransform(rasterX.GetGeoTransform())
+                outds.SetProjection(rasterX.GetProjection())
+
+                array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
+
+                     
+                cloud_mask = (array2 == 128)
+                array1 = np.where(cloud_mask, np.nan, array1)
+                rassum = array1
+ 
+                if self.le_minASTER.text() and self.le_maxASTER.text():
+                    min_value= float(self.le_minASTER.text())
+                    max_value=float(self.le_maxASTER.text())
+                    rassum=np.ma.masked_where(rassum<(min_value), rassum)
+                    rassum=np.ma.masked_where(rassum>(max_value), rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minASTER.text() and self.le_maxASTER.text()=='':
+                    min_value= float(self.le_minASTER.text())
+                    rassum=np.ma.masked_where(rassum<min_value, rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minASTER.text()=='' and self.le_maxASTER.text():
+                    max_value= float(self.le_maxASTER.text())
+                    rassum=np.ma.masked_where(rassum>max_value, rassum) 
+                    rassum = rassum.filled(np.nan) 
+                outds.WriteArray(rassum)
+                outds = None
+                if state=='True':
+                    a=np.nanmean(rassum)
+                    mean_list.append(a)
+                    b=np.nanstd(rassum)
+                    std_list.append(b)
+                    c=np.nanvar(rassum)
+                    var_list.append(c)
+                    d=np.nanmax(rassum)
+                    max_list.append(d)
+                    e=np.nanmin(rassum)
+                    min_list.append(e)
+
+            duration = 1000  
+            freq = 440  
+            if system == 'Windows':
+                winsound.Beep(freq, duration)           
+            iface.messageBar().clearWidgets()      
 
         elif itemVAR_ASTER=='AI-based_outlier_detection':
             # Progress
@@ -24388,11 +24387,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+                          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -24474,10 +24469,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                     name_str=''
                     
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
+
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -24564,10 +24556,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+       
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -24647,11 +24636,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -24733,10 +24718,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+         
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -24818,11 +24800,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan             
+            
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -24908,10 +24886,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -24993,10 +24968,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25077,10 +25049,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan        
+      
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25160,11 +25129,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25245,10 +25210,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25328,11 +25290,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25412,10 +25370,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+         
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25498,10 +25453,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                     name_str=''
                     
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan               
+               
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25585,10 +25537,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25667,11 +25616,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25750,11 +25695,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25833,11 +25774,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+                       
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25917,10 +25854,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -25999,11 +25933,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -26082,11 +26012,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -26165,11 +26091,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+                           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -26250,11 +26172,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+       
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -26337,13 +26255,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -26425,11 +26337,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+                              
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -26475,7 +26383,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 winsound.Beep(freq, duration)           
             iface.messageBar().clearWidgets() 
 
-        elif itemVAR_ASTER=='Mask':
+        elif itemVAR_ASTER=='Clipping_by_mask':
             #Progress
             progressMessageBar = iface.messageBar().createMessage("Executing...")
             progress = QProgressBar()
@@ -26543,11 +26451,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -26631,13 +26535,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -26718,11 +26616,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -26808,11 +26702,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+                            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -26891,11 +26781,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -26978,11 +26864,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan               
+                                 
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -27065,11 +26947,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -27150,10 +27028,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -27234,11 +27108,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan           
+         
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -27319,11 +27189,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+                           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -27402,11 +27268,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -27489,13 +27351,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -27582,13 +27438,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan              
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -27675,13 +27525,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                 
+             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -27772,12 +27616,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                  
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -27863,13 +27701,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                
+            
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -27950,11 +27782,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -28037,13 +27865,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                 
+           
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -28125,11 +27947,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan           
+   
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -28208,11 +28026,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+  
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -28290,11 +28104,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -28382,22 +28192,13 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan                  
+      
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
                 outds.SetProjection(rasterX.GetProjection())
 
 
-                array4= array4/10000
                 array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
                 array2 = np.ma.masked_array(array2, ~np.isfinite(array2)).filled(np.nan) 
                 array3 = np.ma.masked_array(array3, ~np.isfinite(array3)).filled(np.nan)
@@ -28478,10 +28279,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_ASTER+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+       
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -28631,11 +28429,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+                             
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -28680,6 +28474,179 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
             if system == 'Windows':
                 winsound.Beep(freq, duration)           
             iface.messageBar().clearWidgets()                  
+
+        elif itemVAR_MODIS=='Scaling':
+                    #Progress
+            progressMessageBar = iface.messageBar().createMessage("Executing...")
+            progress = QProgressBar()
+            progress.setMaximum(10)
+            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+            progressMessageBar.layout().addWidget(progress)
+            iface.messageBar().pushWidget(progressMessageBar, Qgis.Info)
+            for i in range(10):
+                time.sleep(1)
+                progress.setValue(i+1)
+            for i in range(len(raster_list)):               
+                fp=os.path.join(raster_list[i])
+                rasterX=gdal.Open(fp, gdal.GA_ReadOnly)
+                array1=rasterX.ReadAsArray()
+                array1=array1.astype('float32')
+                name_str=''
+                for char in reversed(raster_list[i]):
+                    if char!='/' and char!='\\':
+                        name_str=name_str+char
+                    else:
+                        break
+
+                name= name_str[::-1]
+                
+                    
+                outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
+                name_str=''
+                             
+                driver=gdal.GetDriverByName("GTiff")
+                outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
+                outds.SetGeoTransform(rasterX.GetGeoTransform())
+                outds.SetProjection(rasterX.GetProjection())
+
+
+                array1 = np.ma.masked_array(array1, ~np.isfinite(array1)).filled(np.nan)
+                try:
+                    scale = float(self.le_parameter1MODIS.text())
+                except ValueError:
+                    scale = 1.0
+                
+                try:
+                    offset = float(self.le_parameter2MODIS.text())
+                except ValueError:
+                    offset = 0.0
+                rassum= array1 * scale + offset    
+ 
+                if self.le_minMODIS.text() and self.le_maxMODIS.text():
+                    min_value= float(self.le_minMODIS.text())
+                    max_value=float(self.le_maxMODIS.text())
+                    rassum=np.ma.masked_where(rassum<(min_value), rassum)
+                    rassum=np.ma.masked_where(rassum>(max_value), rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minMODIS.text() and self.le_maxMODIS.text()=='':
+                    min_value= float(self.le_minMODIS.text())
+                    rassum=np.ma.masked_where(rassum<min_value, rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minMODIS.text()=='' and self.le_maxMODIS.text():
+                    max_value= float(self.le_maxMODIS.text())
+                    rassum=np.ma.masked_where(rassum>max_value, rassum) 
+                    rassum = rassum.filled(np.nan)
+                outds.WriteArray(rassum)
+                outds = None
+                if state=='True':
+                    a=np.nanmean(rassum)
+                    mean_list.append(a)
+                    b=np.nanstd(rassum)
+                    std_list.append(b)
+                    c=np.nanvar(rassum)
+                    var_list.append(c)
+                    d=np.nanmax(rassum)
+                    max_list.append(d)
+                    e=np.nanmin(rassum)
+                    min_list.append(e)
+
+            duration = 1000  
+            freq = 440  
+            if system == 'Windows':
+                winsound.Beep(freq, duration)           
+            iface.messageBar().clearWidgets()
+
+        elif itemVAR_MODIS=='Cloud_masking':
+                    #Progress
+            progressMessageBar = iface.messageBar().createMessage("Executing...")
+            progress = QProgressBar()
+            progress.setMaximum(10)
+            progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+            progressMessageBar.layout().addWidget(progress)
+            iface.messageBar().pushWidget(progressMessageBar, Qgis.Info)
+            for i in range(10):
+                time.sleep(1)
+                progress.setValue(i+1)
+            for i in range(0,len(raster_list)-1,2):
+            
+                fp=os.path.join(raster_list[i])
+                fp2=os.path.join(raster_list[i+1])           
+                rasterX=gdal.Open(fp, gdal.GA_ReadOnly)
+                rasterX2=gdal.Open(fp2, gdal.GA_ReadOnly)
+                array1=rasterX.ReadAsArray()
+                array2=rasterX2.ReadAsArray()
+                if array1.shape != array2.shape:
+                    # Resample QA band to match array1 dimensions
+                    temp_ds = gdal.GetDriverByName('MEM').Create('', rasterX.RasterXSize, rasterX.RasterYSize, 1, gdal.GDT_UInt16)
+                    temp_ds.SetGeoTransform(rasterX.GetGeoTransform())
+                    temp_ds.SetProjection(rasterX.GetProjection())
+                    gdal.ReprojectImage(rasterX2, temp_ds, rasterX2.GetProjection(), rasterX.GetProjection(), gdal.GRA_NearestNeighbour)
+                    array2 = temp_ds.ReadAsArray()
+                    temp_ds = None  # clean up
+                array1=array1.astype('float32')
+                array2=array2.astype('uint16')                         
+                name_str=''
+                for char in reversed(raster_list[i]):
+                    if char!='/' and char!='\\':
+                        name_str=name_str+char
+                    else:
+                        break
+
+                name= name_str[::-1]
+                
+                    
+                outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
+                name_str=''
+                
+                
+               
+                driver=gdal.GetDriverByName("GTiff")
+                outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
+                outds.SetGeoTransform(rasterX.GetGeoTransform())
+                outds.SetProjection(rasterX.GetProjection())
+
+                cloud_state = array2 & 0b11
+                cloud_mask = (cloud_state == 0b00)
+                array1 = np.where(cloud_mask, array1, np.nan)
+
+                rassum= array1              
+                
+ 
+                if self.le_minMODIS.text() and self.le_maxMODIS.text():
+                    min_value= float(self.le_minMODIS.text())
+                    max_value=float(self.le_maxMODIS.text())
+                    rassum=np.ma.masked_where(rassum<(min_value), rassum)
+                    rassum=np.ma.masked_where(rassum>(max_value), rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minMODIS.text() and self.le_maxMODIS.text()=='':
+                    min_value= float(self.le_minMODIS.text())
+                    rassum=np.ma.masked_where(rassum<min_value, rassum)
+                    rassum = rassum.filled(np.nan)
+                elif self.le_minMODIS.text()=='' and self.le_maxMODIS.text():
+                    max_value= float(self.le_maxMODIS.text())
+                    rassum=np.ma.masked_where(rassum>max_value, rassum) 
+                    rassum = rassum.filled(np.nan)
+                outds.WriteArray(rassum)
+                outds = None
+                if state=='True':
+                    a=np.nanmean(rassum)
+                    mean_list.append(a)
+                    b=np.nanstd(rassum)
+                    std_list.append(b)
+                    c=np.nanvar(rassum)
+                    var_list.append(c)
+                    d=np.nanmax(rassum)
+                    max_list.append(d)
+                    e=np.nanmin(rassum)
+                    min_list.append(e)
+
+            duration = 1000  
+            freq = 440  
+            if system == 'Windows':
+                winsound.Beep(freq, duration)           
+            iface.messageBar().clearWidgets() 
+            
+
 
         elif itemVAR_MODIS=='AI-based_outlier_detection':
             # Progress
@@ -28836,11 +28803,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -28925,13 +28888,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
+     
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29017,11 +28974,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
+
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29107,11 +29060,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+                    
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29191,11 +29140,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+      
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29276,11 +29221,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29361,11 +29302,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29455,15 +29392,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
-                    array3[array3<0]=np.nan
-                    array3[array3>10000]=np.nan  
-                    array4[array4<0]=np.nan
-                    array4[array4>10000]=np.nan                
+
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29554,13 +29483,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
+     
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29642,10 +29565,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29726,10 +29646,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29809,11 +29725,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+  
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29895,11 +29807,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan               
+
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -29986,13 +29894,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                 
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -30080,13 +29982,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
-                    array3[array3<0]=np.nan
-                    array3[array3>10000]=np.nan                    
+
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -30180,13 +30076,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
-                    array3[array3<0]=np.nan
-                    array3[array3>10000]=np.nan             
+
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -30274,11 +30164,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -30360,10 +30246,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                     name_str=''
                     
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -30447,10 +30329,6 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
                 
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -30529,11 +30407,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -30612,11 +30486,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -30695,11 +30565,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -30780,11 +30646,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -30865,11 +30727,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -30952,13 +30810,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan            
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -31039,11 +30891,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -31127,13 +30975,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan           
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -31181,7 +31023,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                 winsound.Beep(freq, duration)           
             iface.messageBar().clearWidgets()                
 
-        elif itemVAR_MODIS=='Mask':
+        elif itemVAR_MODIS=='Clipping_by_mask':
             #Progress
             progressMessageBar = iface.messageBar().createMessage("Executing...")
             progress = QProgressBar()
@@ -31249,11 +31091,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -31336,13 +31174,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -31427,13 +31259,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -31515,11 +31341,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                 
+        
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -31605,11 +31427,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+     
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -31688,11 +31506,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -31776,11 +31590,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                     outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                     name_str=''
-                    
-                    array1[array1<0]=np.nan
-                    array1[array1>10000]=np.nan
-                    array2[array2<0]=np.nan
-                    array2[array2>10000]=np.nan               
+   
                     driver=gdal.GetDriverByName("GTiff")
                     outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                     outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -31863,11 +31673,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -31947,11 +31753,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32032,11 +31834,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32117,11 +31915,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                 
+  
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32200,11 +31994,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32287,13 +32077,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                 
+   
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32379,13 +32163,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan               
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32466,11 +32244,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32549,11 +32323,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan         
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32632,11 +32402,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32719,13 +32485,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                     
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32810,13 +32570,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan   
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32901,13 +32655,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan           
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -32989,11 +32737,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -33080,15 +32824,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan            
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -33173,11 +32909,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -33257,11 +32989,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -33340,11 +33068,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -33423,11 +33147,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan             
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -33510,13 +33230,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan                
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -33598,11 +33312,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan               
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -33689,15 +33399,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan                 
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -33779,11 +33481,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan                
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -33870,15 +33568,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan                  
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -33965,11 +33655,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -34057,15 +33743,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan
-                array3[array3<0]=np.nan
-                array3[array3>10000]=np.nan  
-                array4[array4<0]=np.nan
-                array4[array4>10000]=np.nan                             
+          
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -34150,11 +33828,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan              
+  
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -34232,11 +33906,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())
@@ -34317,11 +33987,7 @@ class RemoteSensingToolkitDockWidget(QtWidgets.QDockWidget, QDialog, FORM_CLASS)
                     
                 outputfilename=outfolder_LEtext+'/'+itemVAR_MODIS+'-'+name
                 name_str=''
-                
-                array1[array1<0]=np.nan
-                array1[array1>10000]=np.nan
-                array2[array2<0]=np.nan
-                array2[array2>10000]=np.nan            
+
                 driver=gdal.GetDriverByName("GTiff")
                 outds=driver.Create(outputfilename, xsize=rasterX.RasterXSize, ysize=rasterX.RasterYSize, bands=1, eType=gdal.GDT_Float32)
                 outds.SetGeoTransform(rasterX.GetGeoTransform())

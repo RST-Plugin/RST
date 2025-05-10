@@ -44,7 +44,7 @@
        <bool>false</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="AVHRR">
        <attribute name="title">
@@ -94,7 +94,7 @@
          <widget class="QTreeWidget" name="treeWidgetAVHRR">
           <column>
            <property name="text">
-            <string> </string>
+            <string/>
            </property>
           </column>
          </widget>
@@ -264,7 +264,7 @@
          <widget class="QTreeWidget" name="treeWidgetSentinel">
           <column>
            <property name="text">
-            <string notr="true"> </string>
+            <string notr="true"/>
            </property>
           </column>
          </widget>
@@ -273,7 +273,7 @@
       </widget>
       <widget class="QWidget" name="Landsat8">
        <attribute name="title">
-        <string>Landsat-8</string>
+        <string>Landsat-8/9</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="3" column="0">
@@ -341,7 +341,7 @@
          <widget class="QTreeWidget" name="treeWidgetLandsat">
           <column>
            <property name="text">
-            <string notr="true"> </string>
+            <string notr="true"/>
            </property>
           </column>
          </widget>
@@ -441,7 +441,7 @@
          <widget class="QTreeWidget" name="treeWidgetMODIS">
           <column>
            <property name="text">
-            <string notr="true"> </string>
+            <string notr="true"/>
            </property>
           </column>
          </widget>
@@ -548,7 +548,7 @@
          <widget class="QTreeWidget" name="treeWidgetASTER">
           <column>
            <property name="text">
-            <string notr="true"> </string>
+            <string notr="true"/>
            </property>
           </column>
          </widget>
@@ -619,9 +619,19 @@
      <widget class="QPushButton" name="pb_help">
       <property name="maximumSize">
        <size>
-        <width>40</width>
-        <height>16777215</height>
+        <width>25</width>
+        <height>22</height>
        </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Mongolian Baiti</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+        <underline>false</underline>
+        <kerning>true</kerning>
+       </font>
       </property>
       <property name="cursor">
        <cursorShape>ArrowCursor</cursorShape>
@@ -633,14 +643,26 @@
        <string notr="true">text-align:left;</string>
       </property>
       <property name="text">
-       <string/>
+       <string> !</string>
       </property>
       <property name="icon">
-       <iconset>
-        <normaloff>../../../../../../../../../Downloads/noun-side-menu-.png</normaloff>../../../../../../../../../Downloads/noun-side-menu-.png</iconset>
+       <iconset theme="help">
+        <normaloff>.</normaloff>.</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="default">
+       <bool>false</bool>
       </property>
       <property name="flat">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
     </item>
