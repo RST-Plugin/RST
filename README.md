@@ -61,7 +61,7 @@ Some indices require user-defined parameters or optional min/max thresholds
 Click the Run button to execute the selected workflow and generate outputs
 
 
-## 🧠 Tips for Best Experience
+## 💡 Tips for Best Experience
 
 - Add RST icon to toolbar (right-click toolbar → enable RST)
 - Organize raster folders carefully to prevent mismatched bands
