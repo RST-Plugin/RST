@@ -1,7 +1,7 @@
 
 # Remote Sensing Toolkit (RST) — QGIS Plugin
 
-<img src="img/rst_interfaceicon
+<img src="img/icon.png" alt="RST Interface" width="300"/>
 
 The **Remote Sensing Toolkit (RST)** is an open-source QGIS plugin designed to streamline the computation and analysis of biophysical indices, particularly for time series studies. It features an intuitive interface, support for multiple satellite platforms, and built-in time series analysis tools. RST is ideal for both novice and expert users in remote sensing.
 
