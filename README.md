@@ -78,3 +78,7 @@ Click the Run button to execute the selected workflow and generate outputs
 | Output missing | Double-check the output folder and whether the "Save to Run" button was clicked |
 
 ---
+
+## If you use Remote Sensing Toolkit (RST) plugin in your research, please cite the related article:
+Ezzaher, F.E., Ben Achhab, N., Naciri, H. et al. Remote Sensing Toolkit (RST) plugin for automated multitemporal remote sensing analysis: application to Spain’s 2024 flash flood. Environ Monit Assess 197, 904 (2025). https://doi.org/10.1007/s10661-025-14353-3
+
